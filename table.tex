@@ -1,0 +1,116 @@
+\documentclass[a4paper,twoside]{report}
+ \usepackage{floatrow}
+ \usepackage[T1]{fontenc}
+ \usepackage[utf8]{inputenc}
+ \usepackage{lmodern}
+ \usepackage[left=1cm,right=1cm]{geometry}
+ \usepackage{graphicx}
+ \usepackage{subcaption}
+ \usepackage{caption}
+ \usepackage{svg}
+ \setsvg{inkscape = inkscape -z -D}
+ 
+
+\begin{document}
+ \begin{figure}[htbp]
+ \begin{tabular}[c]{cc}
+ \begin{subfigure}[c]{0.4\textwidth}
+ \includesvg[svgpath = images/,width=\textwidth]{bubbleplot}
+ %\caption{Digraph.}
+ %\label{fig:digraph}
+ \end{subfigure}&
+ \begin{subfigure}[c]{0.4\textwidth}
+ \includesvg[svgpath = images/, width=\textwidth]{lineplot}
+ \null\hfill
+ \caption{Digraph.}
+ \label{fig:digraph}
+ \end{subfigure}\\
+ 
+\begin{subfigure}[c]{0.4\textwidth}
+ \begin{tabular}[c]{|l|c|c|c|c|c|c|}
+ \hline
+ {} & 0 & 1 & 2 & 3 & 4 \\
+ \hline
+ 0 & 0.886864 & 0.518538 & 0.359964 & 0.167291 & 0.940414 \\
+ 1 & 0.834130 & 0.022920 & 0.265131 & 0.059002 & 0.530584 \\
+ 2 & 0.648019 & 0.953043 & 0.263551 & 0.595798 & 0.153969 \\
+ 3 & 0.207003 & 0.015721 & 0.931170 & 0.045044 & 0.432870 \\
+ 4 & 0.039886 & 0.898780 & 0.728195 & 0.112069 & 0.468485 \\
+ \hline
+ \end{tabular}
+ \end{subfigure}&
+ 
+\begin{subfigure}[c]{0.4\textwidth}
+ \includesvg[svgpath = images/, width=\textwidth]{lineplot}
+ \null\hfill
+ \caption{Digraph.}
+ \label{fig:digraph}
+ \end{subfigure}\\
+ 
+
+\begin{subfigure}[c]{0.4\textwidth}
+ \includesvg[svgpath = images/, width=\textwidth]{bubbleplot}
+ \null\hfill
+ \caption{Digraph.}
+ \label{fig:digraph}
+ \end{subfigure}&
+ 
+\begin{subfigure}[c]{0.4\textwidth}
+ \begin{tabular}[c]{|l|c|c|c|c|c|c|}
+ \hline
+ {} & 0 & 1 & 2 & 3 & 4 \\
+ \hline
+ 0 & 0.886864 & 0.518538 & 0.359964 & 0.167291 & 0.940414 \\
+ 1 & 0.834130 & 0.022920 & 0.265131 & 0.059002 & 0.530584 \\
+ 2 & 0.648019 & 0.953043 & 0.263551 & 0.595798 & 0.153969 \\
+ 3 & 0.207003 & 0.015721 & 0.931170 & 0.045044 & 0.432870 \\
+ 4 & 0.039886 & 0.898780 & 0.728195 & 0.112069 & 0.468485 \\
+ \hline
+ \end{tabular}
+ \end{subfigure}\\
+ 
+\begin{subfigure}[c]{0.4\textwidth}
+ \includesvg[svgpath = images/,width=\textwidth]{outrights1}
+ \caption{Digraph.}
+ \label{fig:digraph}
+ \end{subfigure}&
+ \begin{subfigure}[c]{0.4\textwidth}
+ \includesvg[svgpath = images/, width=\textwidth]{outrights2}
+ \null\hfill
+ \caption{Digraph.}
+ \label{fig:digraph}
+ \end{subfigure}\\
+ 
+ 
+ 
+\end{tabular}
+ \caption{Plots of Principle of components}\label{fig:bubble plots}
+ \end{figure}
+ 
+\begin{figure}
+ \CenterFloatBoxes
+ \begin{floatrow}
+ \ffigbox
+ {\includesvg[svgpath = images/,width=0.4\textwidth]{bubbleplot}}
+ {\caption{A caption for a figure in a figure and a table side by side}\label{fig:test}}
+ \killfloatstyle
+ \ttabbox
+ {
+ \begin{tabular}[c]{|l|c|c|c|c|c|c|}
+ \hline
+ {} & 0 & 1 & 2 & 3 & 4 \\
+ \hline
+ 0 & 0.886864 & 0.518538 & 0.359964 & 0.167291 & 0.940414 \\
+ 1 & 0.834130 & 0.022920 & 0.265131 & 0.059002 & 0.530584 \\
+ 2 & 0.648019 & 0.953043 & 0.263551 & 0.595798 & 0.153969 \\
+ 3 & 0.207003 & 0.015721 & 0.931170 & 0.045044 & 0.432870 \\
+ 4 & 0.039886 & 0.898780 & 0.728195 & 0.112069 & 0.468485 \\
+ \hline
+ \end{tabular}
+ }
+ {\caption{A caption for a table in a figure and a table side by side}\label{tab:test}}
+ \end{floatrow}
+ 
+\end{figure}
+ 
+\end{document}
