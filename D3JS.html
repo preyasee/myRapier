@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>D3 Page Template</title>
+        <script type="text/javascript" src="d3.js"></script>
+		<script type="text/javascript" src="crossfilter.js"></script>
+    </head>
+    <body>
+		 <div id="viz"></div>
+        <script type="text/javascript">
+            // Your beautiful D3 code will go here			
+			
+			quad = function(a,b) { 
+					if (a>0 & b>0) return 'Q1';
+					else if (a<0 & b>0) return 'Q2';
+					else if (a<0 & b<0) return 'Q3';
+					else if (a>0 & b<0) return 'Q4';
+					};
+		
+			mapcolor = function(a) {
+					if ( a>0.0) return "#74c476";
+					else return "#d6616b";}
+					
+					
+			function print_filter(filter){
+				var f=eval(filter);
+				//see if the filter came back as an array
+				if (typeof(f.length) != "undefined") {}else{}//console.log("not an array");
+
+				//see if the filter or group needs to be converted to an array by selecting everything //group
+				if (typeof(f.top) != "undefined") {f=f.top(Infinity);}else{}//console.log("not a filter");
+
+				//see if the filter needs a dimension
+				if (typeof(f.dimension) != "undefined") {f=f.dimension(function(d) { return "";}).top(Infinity);}else{}//console.log("not a crossfilter");
+
+				console.log(filter+"("+f.length+") = "+JSON.stringify(f).replace("[","[\n\t").replace(/}\,/g,"},\n\t").replace("]","\n]"));//print it out
+
+			}
+		
+			d3.csv("noRegression.csv", function(data) {
+			var dataset = data;
+			
+			dataset.forEach(function(d){
+				Corr_PC1 = +d.Corr_PC1;
+				Corr_PC2 = +d.Corr_PC2;
+				Carry = +d.Carry;
+				CRbyStd = +d.CRbyStd;
+				d.quad = quad(d.Corr_PC1, d.Corr_PC2);		
+				d.bubblecolor = mapcolor(d.Carry);
+				d.bubblesize = Math.abs(d.CRbyStd);
+			//	console.log(d.PT + " -> " + d.quad + " -> " + d.bubblecolor );
+				});
+			
+			
+			var sampleSVG = d3.select("#viz")
+								.append("svg")
+								.attr("width", 100)
+								.attr("height", 100);  
+								
+				sampleSVG.append("circle")
+						.style("stroke", "gray")
+						.style("fill", "white")
+						.attr("r", 40)
+						.attr("cx", 50)
+						.attr("cy", 50)
+						.on("mouseover", function(){d3.select(this).style("fill", "blue");})
+						.on("mouseout", function(){d3.select(this).style("fill", "white");});
+			
+			var nesteddata= d3.nest().key
+			
+			
+			d3.select("body").selectAll("p")
+				.data(dataset)
+				.enter()
+				.append("p")
+				.text(function(d){return d;})
+				.on("click",function(d){console.log(d)});
+				
+				
+			var cf = crossfilter(dataset);
+			var byInst = cf.dimension(function(p) { return p.PT_Name; });
+			var groupByInst = byInst.group();
+			groupByInst.top(Infinity).forEach(function(p, i) {
+							console.log(p.key + ": " + p.value);
+						});				
+			
+			byInst.filterExact("fly");	
+			byInst.top(Infinity).forEach(function(p, i) {
+							//console.log(p.PT + ". " + p.PT_Currency);
+						});
+			
+			
+			//byInst.filterAll();
+			
+			var byProdType = cf.dimension(function(p) { return p.MainProductType;});
+			byProdType.filterExact('swap');
+			var byWeighted = cf.dimension(function(p) { return p['weighted/unweighted'];});
+			byWeighted.filterExact('unweighted')
+			var byCcy = cf.dimension(function(p) { return p.PT_Currency;});
+			byCcy.filterExact('USD');
+			var bybubblesize = cf.dimension(function(p) { return p.bubblesize;});
+			var rec = bybubblesize.top(Infinity);
+			var byQuad = cf.dimension(function(p) { return p.quad;});
+			//var groupByQuad =byQuad.group();
+			var groupByQuad =byQuad.group().reduce(
+				function(p,v){
+					p[v.PT] = (p[v.PT]||0) + +v.bubblesize;
+					p.abc = (p.key === 'Q4') ? 50 : 40;					
+					++p.count;
+					return p;
+				},
+				function(p,v){
+					p[v.PT] = (p[v.PT]||0) - +v.bubblesize;
+					p.abc=0;					
+					--p.count;
+					return p;
+				},
+				function(){
+					return {count:0};
+				});
+			
+									
+			
+			print_filter(groupByQuad);
+			
+			
+			
+			//console.log("# of presidents starting after 1900: " + byTookOffice.top(Infinity).length);
+			/*groupByQuad.top(Infinity).forEach(function(p, i) {
+							console.log(p.key + ": " + p.value + "  " + p.PT);}); */
+			
+			});
+			
+
+			
+        </script>
+    </body>
+</html> 
