@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>D3 Page Template</title>		
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="http://jun9.github.io/dc.js/css/dc.css"/>
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        
+		<script type="text/javascript" src="d3.js"></script>
+		<script type="text/javascript" src="crossfilter.js"></script>
+		<script type="text/javascript" src="dc.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    </head>
+	
+	 <style type="text/css"></style>
+  
+	  <style>
+		h4 span {
+		  font-size:14px;
+		  font-weight:normal;
+		  }
+		h2 {
+		  float: right;
+		}
+		h2 span {
+		  font-size:14px;
+		  font-weight:normal;
+		  }
+		  
+		 table{			
+			white-space: nowrap;			
+		}
+		th, td {
+			color: #3182bd;						
+			font-weight: bold;
+			font:10px ariel normal;			
+			white-space: nowrap;}  
+		
+	  </style>
+	
+    <body>
+		
+	
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Regression Analysis</a>
+        </div>
+        <!--div id="navbar" class="collapse navbar-collapse"-->
+          <ul class="nav navbar-nav">           
+            <li class="active"><a id="USD" href="#">USD</a></li>
+            <li><a id="CAD" href="#">CAD</a></li>
+			<li><a id="GBP" href="#">GBP</a></li>
+			<li><a id="EUR" href="#">EUR</a></li>
+			<li><a id="JPY" href="#">JPY</a></li>
+			<li class="dropdown">
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#">MultiCCy
+			<span class="caret"></span></a>
+			<ul class="dropdown-menu">
+			  <li><a id="Switch" href="#">Switches</a></li>
+			  <li><a id="Fly" href="#">Flies</a></li>			
+			</ul>
+			</li>
+			<li><a id="Fwd" href="#">Forwards</a></li>
+          </ul>
+        <!--/div--><!--/.nav-collapse -->
+      </div>
+    </nav>
+	
+			
+	 <div class="container" style='margin-top:50px;' >
+		<!--div id="viz"></div-->	
+		<!--div id="options"></div-->
+		
+		
+		<div class ="row">
+			<div class="col-md-6">
+			<div id='fly-bubble-chart'></div>
+			</div>
+			
+		
+			<div class="col-md-6" >
+				<!--table id="data-table" class='dc-data-table' style="line-height: 30px"-->
+				<div class ="row">
+				<table id="dc-table-fly" class='table table-hover'>	</table>
+				</div>
+				
+				<div class ="row">
+				<table id="dc-table-fly2" class='table table-hover'>	</table>
+				</div>
+			</div>
+		</div>		
+	
+	
+		<div class="row">			
+			<div class="col-md-6">
+			<div id='switch-bubble-chart'></div>
+			</div>
+		
+			<div class="col-md-6" >
+			<!--table id="data-table" class='dc-data-table' style="line-height: 30px"-->
+			<div class ="row">
+			<table id="dc-table-switch" class='table table-hover'>	</table>
+			</div>
+			
+			<div class ="row">
+			<table id="dc-table-switch2" class='table table-hover'>	</table>
+			</div>
+			</div>
+					
+		</div>
+		
+
+		
+		<div class="row">				
+			<div class="col-md-6">
+			<div id='top-bubble-chart'></div>
+			</div>
+			
+			<div class="col-md-6" >
+			<!--table id="data-table" class='dc-data-table' style="line-height: 30px"-->
+			<div class ="row">
+			<table id="dc-table-top" class='table table-hover'>	</table>
+			</div>
+			
+			<div class ="row">
+			<table id="dc-table-top2" class='table table-hover'>	</table>
+			</div>
+			</div>	
+						
+		</div>
+		
+		
+		<div class="row">
+			<div class="col-md-6">
+			<div id='outright-chart'></div>
+			</div>
+
+			<div class="col-md-6" >
+			<!--table id="data-table" class='dc-data-table' style="line-height: 30px"-->
+			<div class ="row">
+			<table id="dc-table-outright" class='table table-hover'>	</table>
+			</div>
+			
+			<div class ="row">
+			<table id="dc-table-outright2" class='table table-hover'>	</table>
+			</div>
+			</div>						
+		
+		
+		
+		
+		</div>
+	 
+	 </div><!-- /.container -->
+	 
+	 
+	<script type="text/javascript">	
+			
+		
+		$("#USD").click(function() {
+			chartDdata('USD');
+		});	
+		$("#CAD").click(function() {
+			chartDdata('CAD');
+		});	
+		$("#GBP").click(function() {
+			chartDdata('GBP');
+		});	
+		$("#EUR").click(function() {
+			chartDdata('EUR');
+		});	
+		$("#JPY").click(function() {
+			chartDdata('JPY');
+		});	
+
+		$("#Switch").click(function() {
+			Multiccy('switch');
+		});			
+		
+		$("#Fly").click(function() {
+			Multiccy('fly');
+		});			
+		
+		$("#Fwd").click(function() {
+			Forwards();
+		});			
+		
+		
+
+			
+			quad = function(a,b) { 
+					if (a>0 & b>0) return 'Q1';
+					else if (a<0 & b>0) return 'Q2';
+					else if (a<0 & b<0) return 'Q3';
+					else if (a>0 & b<0) return 'Q4';
+					};
+		
+			mapcolor = function(a) {
+					if ( a>0.0) return 1;//"#74c476";
+					else return 0; }//"#d6616b";}
+					
+					
+			function print_filter(filter){
+				var f=eval(filter);
+				//see if the filter came back as an array
+				if (typeof(f.length) != "undefined") {}else{}//console.log("not an array");
+
+				//see if the filter or group needs to be converted to an array by selecting everything //group
+				if (typeof(f.top) != "undefined") {f=f.top(Infinity);}else{}//console.log("not a filter");
+
+				//see if the filter needs a dimension
+				if (typeof(f.dimension) != "undefined") {f=f.dimension(function(d) { return "";}).top(Infinity);}else{}//console.log("not a crossfilter");
+
+				console.log(filter+"("+f.length+") = "+JSON.stringify(f).replace("[","[\n\t").replace(/}\,/g,"},\n\t").replace("]","\n]"));//print it out
+
+			}
+		
+		
+			var dataset;
+			//d3.csv("noRegression1231.csv", function(data) {
+			d3.csv("noRegression.csv", function(data) {
+			dataset = data;
+			
+			dataset.forEach(function(d){
+				Corr_PC1 = +d.Corr_PC1;
+				Corr_PC2 = +d.Corr_PC2;
+				Carry = +d.Carry;
+				CRbyStd = +d.CRbyStd;
+				d.quad = quad(d.Corr_PC1, d.Corr_PC2);	
+				d.countQ=1000;
+				d.bubblecolor = mapcolor(d["Carry(3m)"]);
+				d.Tenor = d.PT_Tenor1 + d.PT_Tenor2 + d.PT_Tenor3;
+				if (d.PT_Currency == "USD") {d.bubblesize = Math.abs(d["(Carry+Roll)/Std"])/100;}
+				else if (d.PT_Currency == "JPY" ) { d.bubblesize = Math.abs(d["(Carry+Roll)/Std"])/10;}
+				else
+				{d.bubblesize = Math.abs(d["(Carry+Roll)/Std"]);}
+			//	console.log(d.PT + " -> " + d.quad + " -> " + d.bubblecolor );
+				});
+				chartDdata("USD");
+			});
+			
+			/*
+			d3.csv("Regression1231.csv", function(data) {
+				regdataset = data;
+				regdataset.forEach(function(d){
+					d.Zabs = Math.abs(d["Z(5b)"]);
+					})			
+			});
+			*/
+
+			
+			
+			var fwddataset;			
+			d3.csv("FWDstableTranspose.csv", function(error, data) {
+				//var mappedArray = d3.entries(data[data.length-1]);
+				//var valueKey = mappedArray[1].key;
+				//console.log(data[data.length-1]);
+				fwddataset = data;
+				var i = 1;
+				fwddataset.forEach(function(d){
+						d.Tenor = d[""].substring(d[""].length-2);
+						d.CCy = d[""].substring(0,4);
+						d.keyCol = d.CCy + d.Tenor;
+						i=i+1;
+						console.log("CCy->" + d.CCy + " Tenor->" + d.Tenor)});			
+				//console.log(valueKey);				
+			})
+
+			
+			function Forwards()
+			{
+			
+				d3.selectAll("h1").remove();
+				d3.select("#fly-bubble-chart").select("svg").remove();
+				d3.select("#switch-bubble-chart").select("svg").remove();
+				d3.select("#top-bubble-chart").select("svg").remove();
+				d3.select("#outright-chart").select("svg").remove();
+				d3.selectAll("thead").remove();
+				d3.selectAll("tbody").remove();
+			
+			
+				products = ['USSW', 'CDSW', 'BPSW', 'EUSW', 'JYSW'];
+				tenors = ['1Y', '2Y', '5Y'];
+				var cf = crossfilter(fwddataset);
+				var curveCCy=cf.dimension(function(p) { return p.CCy; });	
+				curveCCy.filter("USSW");
+				var curveTenor=cf.dimension(function(p){return p.Tenor;});
+				curveTenor.filter("1Y");
+				var curveName=cf.dimension(function(p){return p[""];});
+				var store1=0, store2=0;
+				var dimcount = curveName.top(Infinity).length;				
+				curveName.bottom(Infinity).forEach(function(p,i) { 								
+								p.x = i;
+								p.level=p["89"];
+								p.slope =p["89"]-store1;
+								//p.convexity = (i==0) ? 0 : store2-p.slope;
+								store1=p["89"];
+								store2=p.slope;
+								//console.log("level=" + p.level + " slope=" + p.slope + " Convexity=" + p.convexity + " Tenor=" + p[""]);
+					})
+				curveName.bottom(Infinity)[0]["slope"]=curveName.bottom(Infinity)[1]["slope"];
+				
+				
+				curveName.top(Infinity).forEach(function(p,i) { 								
+								p.convexity = p.slope - store2;
+								store2= p.slope;
+								//console.log("level=" + p.level + " slope=" + p.slope + " Convexity=" + p.convexity + " Tenor=" + p[""]);
+					});
+				curveName.top(Infinity)[0]["convexity"]=curveName.top(Infinity)[1]["convexity"];	
+				curveName.bottom(Infinity).forEach(function(p,i) { 								
+								console.log("level=" + p.level + " slope=" + p.slope + " Convexity=" + p.convexity + " Tenor=" + p[""] + "extra= " + p.keyCol);
+								});
+								
+				//print_filter(curveName.group(function(slope){return slope;}));
+
+
+				
+				//grp1 = curveName.group().reduceSum(dc.pluck('slope')),
+				//grp2 = curveName.group().reduceSum(dc.pluck('curvature'));
+				
+				
+				var keydim = cf.dimension(function(p){return p.keyCol;});				
+				keydim.filter(function(d){return d == "USSW1Y"});
+				var grp1 = keydim.group().reduce(
+				function(p,v){
+					p["slope"] = v.slope;
+					++p.count;
+					return p;
+				},
+				function(p,v){
+					p["slope"] = v.slope;
+					--p.count;
+					return p;
+				},
+				function(){
+					return {count:0,slope:0.0};
+				});
+				
+				console.log("Inside Forwards");
+				print_filter(grp1);
+
+				
+				
+				var compositeChart = dc.compositeChart('#fly-bubble-chart', 'fly-bubble-chart_group');
+				var lineChart = dc.lineChart('#fly-bubble-chart', 'fly-bubble-chart_group');
+/*			    compositeChart
+				.width(768)
+				.height(480)
+				.x(d3.scale.linear().domain([0,10]))
+				.yAxisLabel("The Y Axis")
+				.legend(dc.legend().x(30).y(10).itemHeight(13).gap(5))
+				.renderHorizontalGridLines(true)
+				.compose([
+					dc.lineChart(compositeChart)
+						.dimension(curveName)
+						.colors('red')
+						.group(grp1, "Top Line")
+						.dashStyle([2,2]),
+					dc.lineChart(compositeChart)
+						.dimension(curveName)
+						.colors('blue')
+						.group(grp2, "Bottom Line")
+						.dashStyle([5,5])
+					])
+				.brushOn(false)
+*/
+
+				lineChart
+				.width(768)
+				.height(480)
+				.x(d3.scale.linear().domain([0,5]))
+				.interpolate('step-before')
+				.renderArea(true)
+				.brushOn(false)
+				.renderDataPoints(true)
+				.clipPadding(10)
+				.yAxisLabel("This is the Y Axis!")
+				.dimension(keydim)
+				.group(grp1);
+
+
+
+				
+				dc.renderAll('fly-bubble-chart_group')
+				
+				
+			};
+			
+			
+			
+			function chartDdata(ccy){
+			
+			
+			/*var sampleSVG = d3.select("#viz")
+								.append("svg")
+								.attr("width", 100)
+								.attr("height", 100);  
+								
+				sampleSVG.append("circle")
+						.style("stroke", "gray")
+						.style("fill", "white")
+						.attr("r", 40)
+						.attr("cx", 50)
+						.attr("cy", 50)
+						.on("mouseover", function(){d3.select(this).style("fill", "blue");})
+						.on("mouseout", function(){d3.select(this).style("fill", "white");});
+			
+			var nesteddata= d3.nest().key
+			*/
+			
+			/*d3.select("body").selectAll("p")
+				.data(dataset)
+				.enter()
+				.append("p")
+				.text(function(d){return d;})
+				.on("click",function(d){console.log(d)});
+			*/	
+			
+			d3.selectAll("h1").remove();
+			d3.select("#fly-bubble-chart").select("svg").remove();
+			d3.select("#switch-bubble-chart").select("svg").remove();
+			d3.select("#top-bubble-chart").select("svg").remove();
+			d3.select("#outright-chart").select("svg").remove();
+			
+			d3.select("#fly-bubble-chart")			
+			.append("h1")
+			.text("Flies")
+			
+			d3.select("#switch-bubble-chart")			
+			.append("h1")
+			.text("Switches")
+			
+			d3.select("#top-bubble-chart")			
+			.append("h1")
+			.text("Top Trades")
+			
+			
+			var flyBubbleChart = dc.bubbleChart('#fly-bubble-chart', 'fly-bubble-chart_group');
+			var switchBubbleChart = dc.bubbleChart('#switch-bubble-chart' , 'switch-bubble-chart_group');
+			var topBubbleChart = dc.bubbleChart('#top-bubble-chart' , 'top-bubble-chart_group');
+			var flyTable = dc.dataTable('#dc-table-fly', 'flydata');
+			var switchTable = dc.dataTable('#dc-table-switch', 'switchdata');
+			var currencyPieChart = dc.pieChart('#currency-pie-chart');			
+
+			d3.selectAll("thead").remove();
+			d3.selectAll("tbody").remove();
+			
+			
+			
+			var table = d3.select("#dc-table-fly")            
+			thead = table.append("thead"),
+						
+			columns=["Switch","Lvl","Lvl-L","Lvl-H","Carry","Roll","Vol","Z","P","Duration","Curve"];
+			thead.append("tr")
+			.selectAll("th")
+			.data(columns)
+			.enter()
+			.append("th")
+            .text(function(column) { return column; });
+
+			table = d3.select("#dc-table-switch")            
+			thead = table.append("thead"),
+						
+			thead.append("tr")
+			.selectAll("th")
+			.data(columns)
+			.enter()
+			.append("th")
+            .text(function(column) { return column; });
+			
+			
+			
+			
+			var cf = crossfilter(dataset);
+			var byInst = cf.dimension(function(p) { return p["PT Name"]; });			
+			var byProdType = cf.dimension(function(p) { return p.MainProductType;});
+			var byWeighted = cf.dimension(function(p) { return p['weighted/unweighted'];});
+			var byCcy = cf.dimension(function(p) { return p.PT_Currency;});
+			var byQuad = cf.dimension(function(p) { return p.quad;});
+			var bybubble = cf.dimension(function(p) { return p.bubblesize;});
+			//var temp = cf.dimension(function(p){return p.countQ});						
+			
+			var groupByInst = byInst.group();
+			groupByInst.top(Infinity).forEach(function(p, i) {
+							console.log(p.key + ": " + p.value);
+						});				
+			
+			
+			byInst.filterExact("fly");				
+			byProdType.filterExact('swap');			
+			byWeighted.filterExact('unweighted');			
+			var ccygroup = byCcy.group();
+			byCcy.filterExact(ccy);						
+			
+			//temp.top(Infinity).forEach(function(p,i) { p.countQ=1000;})
+			
+			byQuad.filterExact('Q1');			
+			bybubble.top(5).forEach(function(p, i) {
+							p.countQ=i;
+							//console.log(p.PT + ". " + p.PT_Currency + ". " + p.bubblesize + ". " + p.quad + ". " + p.countQ);
+						});			
+			
+			byQuad.filterExact('Q2');
+			bybubble.top(5).forEach(function(p, i) {							
+							p.countQ=i+5;
+							//console.log(p.PT + ". " + p.PT_Currency + ". " + p.bubblesize + ". " + p.quad + ". " + p.countQ);
+						});			
+			
+			
+			byQuad.filterExact('Q3');
+			bybubble.top(5).forEach(function(p, i) {							
+							p.countQ=i+10;
+							//console.log(p.PT + ". " + p.PT_Currency + ". " + p.bubblesize + ". " + p.quad + ". " + p.countQ);
+						});			
+			
+			byQuad.filterExact('Q4');
+			bybubble.top(5).forEach(function(p, i) {							
+							p.countQ=i+15;
+							//console.log(p.PT + ". " + p.PT_Currency + ". " + p.bubblesize + ". " + p.quad + ". " + p.countQ);
+						});			
+			byQuad.filterAll();
+			    
+			
+						
+			var temp = cf.dimension(function(p){return p.countQ});						
+			temp.filter(function(d){return d < 30});
+			temp.top(Infinity).forEach(function(p,i) {
+							console.log(p.PT + ". " + p.PT_Currency + ". " + p.bubblesize + ". " + p.quad + ". " + p.countQ);
+						});
+			
+			//var gr oupByQuad =temp.group();
+			var groupByQuad =temp.group().reduce(
+				function(p,v){
+					//p[v.PT] = (p[v.PT]||0) + +v.bubblesize;
+					p["size"] =  +v.bubblesize;
+					p["color"] = v.bubblecolor;
+					p["x"] = +v.Corr_PC1;
+					p["y"] = +v.Corr_PC2;
+					p["ccy"] = v.PT_Currency;
+					p["label"] = v.Tenor;
+					++p.count;
+					return p;
+				},
+				function(p,v){
+					//p[v.PT] = (p[v.PT]||0) - +v.bubblesize;
+					p["size"] =  +v.bubblesize;
+					p["color"] = v.bubblecolor;
+					p["x"] = +v.Corr_PC1;
+					p["y"] = +v.Corr_PC2;
+					p["ccy"] = v.PT_Currency;
+					p["label"] = v.Tenor;
+					--p.count;
+					return p;
+				},
+				function(){
+					return {count:0,x:0,y:0,size:0,color:"",ccy:"",label:""};
+				});
+			
+									
+			
+			print_filter(groupByQuad);
+			
+			
+		flyBubbleChart
+        .width(600)        
+        .height(550)        
+        .transitionDuration(1500)
+        .margins({top: 60, right: 50, bottom: 20, left: 20})
+        .dimension(temp)        
+        .group(groupByQuad)
+        // (_optional_) define color function or array for bubbles: [ColorBrewer](http://colorbrewer2.org/)
+        //.colors(colorbrewer.RdYlGn[9])
+		.colors(["#d62728","#2ca02c"])
+        //(optional) define color domain to match your data domain if you want to bind data or color
+        //.colorDomain([-500, 500])       
+        .colorAccessor(function (d) {return d.value.color;})        
+        .keyAccessor(function (p) {return p.value.x;})        
+        .valueAccessor(function (p) {return p.value.y;})                
+        .radiusValueAccessor(function (p) {return p.value.size;})		
+        .maxBubbleRelativeSize(1.2)
+        .x(d3.scale.linear().domain([-1.5, 1.5]))
+        .y(d3.scale.linear().domain([-1.5, 1.5]))
+        .r(d3.scale.linear().domain([0, 150]))                
+        .elasticY(true)
+        .elasticX(true)        
+        .yAxisPadding(0.2)
+        .xAxisPadding(0.2)        
+        .renderHorizontalGridLines(false)
+        .renderVerticalGridLines(false)		
+		.title(function (p) {return p.value.ccy;})
+		.renderTitle(true)
+        .xAxisLabel(' Corr_PC1')        
+        .yAxisLabel('Corr_PC2')
+		.label(function (p) {
+			return p.value.label;})
+		.renderLabel(true);
+        
+		
+		dc.renderAll('fly-bubble-chart_group')
+		
+		
+		flyTable
+		.width(1200)
+		.height(600)
+		.dimension(temp)
+		.group(function(d){
+				return ""})
+		.size(20)
+		.columns([
+				function(d){ return d.Tenor;},
+				function(d){ return d.Level_Current;},
+				function(d){ return d["Level_Low(3m)"];},
+				function(d){ return d["Level_High(3m)"]},
+				function(d){ return d["Carry(3m)"];},
+				function(d){ return d["Roll(3m)"];},
+				function(d){ return d["Std"];},
+				function(d){ return d["Z"];},
+				function(d){ return d["(Carry+Roll)/Std"];},
+				function(d){ return d["Type_PC1"];},
+				function(d){ return d["Type_PC2"];},
+				]);		
+
+		
+		dc.renderAll('flydata')
+		
+		
+		
+		
+		
+		byInst.filterAll();
+		temp.filterAll();
+		byInst.filterExact('switch');
+		byProdType.filterExact('swap');
+		byWeighted.filterExact('unweighted')
+		byCcy.filterExact(ccy);
+		
+		
+		byQuad.filterExact('Q1');				
+		bybubble.top(5).forEach(function(p, i) {p.countQ1=i;});					
+		byQuad.filterExact('Q2');
+		bybubble.top(5).forEach(function(p, i) {p.countQ1=i+5;});					
+		byQuad.filterExact('Q3');
+		bybubble.top(5).forEach(function(p, i) {p.countQ1=i+10;});					
+		byQuad.filterExact('Q4');
+		bybubble.top(5).forEach(function(p, i) {p.countQ1=i+15;});			
+		byQuad.filterAll();
+			
+		temp = cf.dimension(function(p){return p.countQ1});	
+		temp.filter(function(d){return d < 30}); 
+		temp.top(Infinity).forEach(function(p,i) {
+						console.log(p.PT + ". " + p.PT_Currency + ". " + p.bubblesize + ". " + p.quad + ". " + p.countQ1);
+					});
+		
+		//var gr oupByQuad =temp.group();
+		var groupByQuad =temp.group().reduce(
+			function(p,v){
+				//p[v.PT] = (p[v.PT]||0) + +v.bubblesize;
+				p["size"] =  +v.bubblesize;
+				p["color"] = v.bubblecolor;
+				p["x"] = +v.Corr_PC1;
+				p["y"] = +v.Corr_PC2;
+				p["ccy"] = v.PT_Currency;
+				p["label"] = v.Tenor;				
+				++p.count;
+				return p;
+			},
+			function(p,v){
+				//p[v.PT] = (p[v.PT]||0) - +v.bubblesize;
+				p["size"] =  +v.bubblesize;
+				p["color"] = v.bubblecolor;
+				p["x"] = +v.Corr_PC1;
+				p["y"] = +v.Corr_PC2;
+				p["ccy"] = v.PT_Currency;
+				p["label"] = v.Tenor;				
+				--p.count;
+				return p;
+			},
+			function(){
+				return {count:0,x:0,y:0,size:0,color:"",ccy:"",label:""};
+			});
+		
+								
+		
+		print_filter(groupByQuad);
+		
+		
+		
+	switchBubbleChart
+	.width(600)        
+	.height(400)        
+	.transitionDuration(1500)
+	.margins({top: 40, right: 50, bottom: 30, left: 40})
+	.dimension(temp)        
+	.group(groupByQuad)
+	// (_optional_) define color function or array for bubbles: [ColorBrewer](http://colorbrewer2.org/)
+	//.colors(colorbrewer.RdYlGn[9])
+	.colors(["#d62728","#2ca02c"])
+	//(optional) define color domain to match your data domain if you want to bind data or color
+	//.colorDomain([-500, 500])       
+	.colorAccessor(function (d) {return d.value.color;})        
+	.keyAccessor(function (p) {return p.value.x;})        
+	.valueAccessor(function (p) {return p.value.y;})                
+	.radiusValueAccessor(function (p) {return p.value.size;})
+	.maxBubbleRelativeSize(1.2)
+	.x(d3.scale.linear().domain([-1.5, 1.5]))
+	.y(d3.scale.linear().domain([-1.5, 1.5]))
+	.r(d3.scale.linear().domain([0, 150]))                
+	.elasticY(true)
+	.elasticX(true)        
+	.yAxisPadding(0.2)
+	.xAxisPadding(0.2)        
+	.renderHorizontalGridLines(false)
+	.renderVerticalGridLines(false)
+	.xAxisLabel(' Corr_PC1')        
+	.yAxisLabel('Corr_PC2')	
+	.label(function (p) {
+		return p.value.label;})
+	.renderLabel(true);	
+		
+		
+		
+	dc.renderAll('switch-bubble-chart_group')		
+		
+		
+		
+	switchTable
+		.width(1200)
+		.height(600)
+		.dimension(temp)
+		.group(function(d){
+				return ""})
+		.size(20)
+		.columns([
+				function(d){ return d.Tenor;},
+				function(d){ return d.Level_Current;},
+				function(d){ return d["Level_Low(3m)"];},
+				function(d){ return d["Level_High(3m)"]},
+				function(d){ return d["Carry(3m)"];},
+				function(d){ return d["Roll(3m)"];},
+				function(d){ return d["Std"];},
+				function(d){ return d["Z"];},
+				function(d){ return d["(Carry+Roll)/Std"];},
+				function(d){ return d["Type_PC1"];},
+				function(d){ return d["Type_PC2"];},
+				]);		
+
+		
+	dc.renderAll('switchdata')
+		
+		
+		
+	byInst.filterAll();
+	temp.filterAll();	
+	byProdType.filterExact('swap');
+	byWeighted.filterExact('unweighted')
+	byCcy.filterExact(ccy);
+	
+	
+	byQuad.filterExact('Q1');				
+	bybubble.top(5).forEach(function(p, i) {p.countQ2=i;});					
+	byQuad.filterExact('Q2');
+	bybubble.top(5).forEach(function(p, i) {p.countQ2=i+5;});					
+	byQuad.filterExact('Q3');
+	bybubble.top(5).forEach(function(p, i) {p.countQ2=i+10;});					
+	byQuad.filterExact('Q4');
+	bybubble.top(5).forEach(function(p, i) {p.countQ2=i+15;});			
+	byQuad.filterAll();
+		
+	temp = cf.dimension(function(p){return p.countQ2});	
+	temp.filter(function(d){return d < 30}); 
+	temp.top(Infinity).forEach(function(p,i) {
+					console.log(p.PT + ". " + p.PT_Currency + ". " + p.bubblesize + ". " + p.quad + ". " + p.countQ2);
+				});
+	
+	//var gr oupByQuad =temp.group();
+	var groupByQuad =temp.group().reduce(
+		function(p,v){
+			//p[v.PT] = (p[v.PT]||0) + +v.bubblesize;
+			p["size"] =  +v.bubblesize;
+			p["color"] = v.bubblecolor;
+			p["x"] = +v.Corr_PC1;
+			p["y"] = +v.Corr_PC2;
+			p["ccy"] = v.PT_Currency;
+			p["label"] = v.Tenor;							
+			++p.count;
+			return p;
+		},
+		function(p,v){
+			//p[v.PT] = (p[v.PT]||0) - +v.bubblesize;
+			p["size"] =  +v.bubblesize;
+			p["color"] = v.bubblecolor;
+			p["x"] = +v.Corr_PC1;
+			p["y"] = +v.Corr_PC2;
+			p["ccy"] = v.PT_Currency;
+			p["label"] = v.Tenor;							
+			--p.count;
+			return p;
+		},
+		function(){
+			return {count:0,x:0,y:0,size:0,color:"",ccy:"",label:""};
+		});
+	
+							
+	
+	print_filter(groupByQuad);
+	
+	
+	
+	topBubbleChart
+	.width(600)        
+	.height(400)        
+	.transitionDuration(1500)
+	.margins({top: 40, right: 50, bottom: 30, left: 40})
+	.dimension(temp)        
+	.group(groupByQuad)
+	// (_optional_) define color function or array for bubbles: [ColorBrewer](http://colorbrewer2.org/)
+	//.colors(colorbrewer.RdYlGn[9])
+	.colors(["#d62728","#2ca02c"])
+	//(optional) define color domain to match your data domain if you want to bind data or color
+	//.colorDomain([-500, 500])       
+	.colorAccessor(function (d) {return d.value.color;})        
+	.keyAccessor(function (p) {return p.value.x;})        
+	.valueAccessor(function (p) {return p.value.y;})                
+	.radiusValueAccessor(function (p) {return p.value.size;})
+	.maxBubbleRelativeSize(1.2)
+	.x(d3.scale.linear().domain([-1.5, 1.5]))
+	.y(d3.scale.linear().domain([-1.5, 1.5]))
+	.r(d3.scale.linear().domain([0, 150]))                
+	.elasticY(true)
+	.elasticX(true)        
+	.yAxisPadding(0.2)
+	.xAxisPadding(0.2)        
+	.renderHorizontalGridLines(false)
+	.renderVerticalGridLines(false)
+	.xAxisLabel(' Corr_PC1')        
+	.yAxisLabel('Corr_PC2')
+	.label(function (p) {
+		return p.value.label;})
+	.renderLabel(true);	
+		
+		
+		
+	dc.renderAll('top-bubble-chart_group')				
+		
+	}	
+	
+	
+	
+	
+	
+	function Multiccy(inst){
+			var cf = crossfilter(dataset);
+			var byInst = cf.dimension(function(p) { return p["PT Name"]; });			
+			var byProdType = cf.dimension(function(p) { return p.MainProductType;});
+			var byWeighted = cf.dimension(function(p) { return p['weighted/unweighted'];});
+			var byCcy = cf.dimension(function(p) { return p.PT_Currency;});	
+			var byTenor = cf.dimension(function(p) { return p.Tenor;});
+				
+			byInst.filterExact(inst);				
+			byProdType.filterExact('swap');			
+			byWeighted.filterExact('unweighted');		
+			var objTest={arg1:byCcy,arg2:byTenor};
+			
+			var insttenors={"switch":["2Y5Y","5Y10Y","5Y30Y","10Y30Y"], "fly":["2Y3Y5Y","2Y5Y10Y","5Y10Y30Y"]};
+			var PH3 = ["fly-bubble-chart", "switch-bubble-chart", "top-bubble-chart", "outright-chart"];
+			var PH1 = [];
+			console.log(insttenors[inst]);
+	
+			//switchBubbleChart.resetSvg();
+			//flyBubbleChart.resetSvg();
+			//topBubbleChart.resetSvg();			
+			d3.selectAll("h1").remove();
+			d3.selectAll("svg").remove();
+			d3.selectAll("thead").remove();
+			d3.selectAll("tbody").remove();			
+			
+			
+			for (i=0;i<insttenors[inst].length;i++){
+				d3.select("#" + PH3[i])			
+					.append("h1")
+					.text(insttenors[inst][i])
+			}
+
+			
+			Multtables(insttenors[inst][0], "#dc-table-fly", "#dc-table-fly2", "fly-bubble-chart", objTest);
+			Multtables(insttenors[inst][1], "#dc-table-switch", "#dc-table-switch2", "switch-bubble-chart", objTest);
+			Multtables(insttenors[inst][2], "#dc-table-top", "#dc-table-top2", "top-bubble-chart", objTest);
+			Multtables(insttenors[inst][3], "#dc-table-outright", "#dc-table-outright2", "outright-chart", objTest);
+			
+			
+			
+			function Multtables(tenor, placeholder1, placeholder2, placeholder3, objTest1){
+			
+				objTest1.arg2.filterAll();
+				objTest1.arg2.filterExact(tenor);				
+			
+				var corr=d3.csv(tenor + "CORR" + inst + "table.csv", function(data) {
+			
+	
+				var table = d3.select(placeholder1)
+				//.attr("style", "margin-left: 250px"),
+				thead = table.append("thead"),
+				tbody = table.append("tbody");
+				
+				columns=["","BP","CD","EU","JY","US"];
+				thead.append("tr")
+				.selectAll("th")
+				.data(columns)
+				.enter()
+				.append("th")
+				.text(function(column) { return column; });
+	
+	
+	
+				var rows = tbody.selectAll("tr")
+				.data(data)
+				.enter()
+				.append("tr");
+
+			// create a cell in each row for each column
+				var cells = rows.selectAll("td")
+				.data(function(row) {
+					return columns.map(function(column) {
+						return {column: column, value: row[column]};
+					});
+				})
+				.enter()
+				.append("td")
+				//.attr("style", "font-family: Courier") // sets the font style
+					.text(function(d) { return d.value; });	
+					
+			})
+			
+			
+			
+			
+			var corr=d3.csv(tenor + "MultCCy" + inst + "table.csv", function(data) {
+		
+				var table = d3.select(placeholder2)
+				//.attr("style", "margin-left: 250px"),
+				thead = table.append("thead"),
+				tbody = table.append("tbody");
+				
+				columns=["CCy","t mr","Z 3m","Z svd","PC1"];
+				thead.append("tr")
+				.selectAll("th")
+				.data(columns)
+				.enter()
+				.append("th")
+				.text(function(column) { return column; });
+	
+	
+	
+				var rows = tbody.selectAll("tr")
+				.data(data)
+				.enter()
+				.append("tr");
+				
+			// create a cell in each row for each column
+				var cells = rows.selectAll("td")
+				.data(function(row) {
+					return columns.map(function(column) {
+						return {column: column, value: row[column]};
+					});
+				})
+				.enter()
+				.append("td")
+				//.attr("style", "font-family: Courier") // sets the font style
+					.text(function(d) { return d.value; });	
+					
+			})	
+
+
+			var groupByQuad =objTest1.arg1.group().reduce(
+				function(p,v){
+					//p[v.PT] = (p[v.PT]||0) + +v.bubblesize;
+					p["size"] =  +v.bubblesize*2;
+					p["color"] = v.bubblecolor;
+					p["x"] = +v.Corr_PC1;
+					p["y"] = +v.Corr_PC2;
+					p["ccy"] = v.PT_Currency;
+					p["label"] = v.Tenor;
+					++p.count;
+					return p;
+				},
+				function(p,v){
+					//p[v.PT] = (p[v.PT]||0) - +v.bubblesize;
+					p["size"] =  +v.bubblesize*2;
+					p["color"] = v.bubblecolor;
+					p["x"] = +v.Corr_PC1;
+					p["y"] = +v.Corr_PC2;
+					p["ccy"] = v.PT_Currency;
+					p["label"] = v.Tenor;
+					--p.count;
+					return p;
+				},
+				function(){
+					return {count:0,x:0,y:0,size:0,color:"",ccy:"",label:""};
+				});
+			
+									
+			
+			print_filter(groupByQuad);
+			
+			var bubbleChart=dc.bubbleChart("#" + placeholder3, placeholder3 + "_group");
+			
+			bubbleChart
+			.width(600)        
+			.height(400)        
+			.transitionDuration(1500)
+			.margins({top: 40, right: 50, bottom: 30, left: 40})
+			.dimension(objTest1.arg1)        
+			.group(groupByQuad)
+			// (_optional_) define color function or array for bubbles: [ColorBrewer](http://colorbrewer2.org/)
+			//.colors(colorbrewer.RdYlGn[9])
+			.colors(["#d62728","#2ca02c"])
+			//(optional) define color domain to match your data domain if you want to bind data or color
+			//.colorDomain([-500, 500])       
+			.colorAccessor(function (d) {return d.value.color;})        
+			.keyAccessor(function (p) {return p.value.x;})        
+			.valueAccessor(function (p) {return p.value.y;})                
+			.radiusValueAccessor(function (p) {return p.value.size;})
+			.maxBubbleRelativeSize(1.2)
+			.x(d3.scale.linear().domain([-1.5, 1.5]))
+			.y(d3.scale.linear().domain([-1.5, 1.5]))
+			.r(d3.scale.linear().domain([0, 150]))                
+			.elasticY(true)
+			.elasticX(true)        
+			.yAxisPadding(0.2)
+			.xAxisPadding(0.2)        
+			.renderHorizontalGridLines(false)
+			.renderVerticalGridLines(false)
+			.xAxisLabel(' Corr_PC1')        
+			.yAxisLabel('Corr_PC2')
+			.label(function (p) {
+				return p.value.ccy;})
+			.renderLabel(true);			
+
+
+			dc.renderAll(placeholder3 + "_group");
+
+
+			
+			
+			}
+			
+
+
+			
+				
+	
+	}
+		
+	
+			
+			
+
+			
+        </script>
+    </body>
+</html> 
