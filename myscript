@@ -1,0 +1,197 @@
+		
+			CcyChart = dc.rowChart('#fly-bubble-chart', 'chartGroup')
+			BubbleChart = dc.bubbleChart('#switch-bubble-chart', 'chartGroup');
+			InstChart = dc.pieChart('#fly-bubble-chart1','chartGroup');
+			flyTable = dc.dataTable('#dc-table-switch2', 'chartGroup');
+			
+			
+			
+			var table = d3.select("#dc-table-switch2")            
+			thead = table.append("thead")
+						
+			columns=["Fly/Switch","Lvl","Lvl-L","Lvl-H","Carry","Roll","Vol","Z","P","Duration","Curve"];
+			thead.append("tr")
+			.selectAll("th")
+			.data(columns)
+			.enter()
+			.append("th")
+            .text(function(column) { return column; });
+		
+		
+			var dataset;
+			d3.csv("topInstBubbles.csv", function(data) {
+			dataset = data;
+			var i = 1;
+			dataset.forEach(function(d){
+				Corr_PC1 = +d.Corr_PC1;
+				Corr_PC2 = +d.Corr_PC2;
+				Carry = +d.Carry;
+				CRbyStd = +d.CRbyStd;
+				Level_Current = +d.Level_Current;
+				d["Level_High(3m)"] = +d["Level_High(3m)"];
+				d["Level_Low(3m)"] = +d["Level_Low(3m)"];
+				d.quad = quad(d.Corr_PC1, d.Corr_PC2);	
+				d.Index = i;
+				i++;
+				d.bubblecolor = mapcolor(d["Carry(3m)"]);
+				d.Tenor = d.PT_Tenor1 + d.PT_Tenor2 + d.PT_Tenor3;
+				if (d.PT_Currency == "USD") {d.bubblesize = 2*Math.abs(d["(Carry+Roll)/Std"]);}
+				else if (d.PT_Currency == "JPY" ) { d.bubblesize = 2*Math.abs(d["(Carry+Roll)/Std"]);}
+				else
+				{d.bubblesize = 2*Math.abs(d["(Carry+Roll)/Std"]);}
+				});
+				
+				//chartDdata("USD");
+				
+								
+				
+				cf = crossfilter(data);
+				all = cf.groupAll();
+				byInst = cf.dimension(function(p) { return p["PT Name"]; });			
+				byCcy = cf.dimension(function(p) { return p.PT_Currency;});
+				byInst1 = cf.dimension(function(p) { return p["PT Name"]; });			
+
+			
+				//byInst.filterExact("fly");				
+				byCcy.filterExact("USD");		
+				ccygroup= byCcy.group();				
+				instgroup = byInst.group();
+				
+							
+				temp = cf.dimension(function(p){return p.PT});						
+			
+
+				groupByQuad =temp.group().reduce(
+					function(p,v){
+						//p[v.PT] = (p[v.PT]||0) + +v.bubblesize;
+						p["size"] =  +v.bubblesize;
+						p["color"] = v.bubblecolor;
+						p["x"] = +v.Corr_PC1;
+						p["y"] = +v.Corr_PC2;
+						p["ccy"] = v.PT_Currency;
+						p["label"] = v.Tenor;
+						p["Main_ProductType"] = v["Main Product Type"];
+						p["Level_Current"] = v["Level_Current"];					
+						++p.count;
+						return p;
+					},
+					function(p,v){
+						//p[v.PT] = (p[v.PT]||0) - +v.bubblesize;
+						p["size"] =  -v.bubblesize;
+						p["color"] = v.bubblecolor;
+						p["x"] = -v.Corr_PC1;
+						p["y"] = -v.Corr_PC2;
+						p["ccy"] = v.PT_Currency;
+						p["label"] = v.Tenor;
+						p["Main_ProductType"] = v["Main Product Type"];
+						p["Level_Current"] = v["Level_Current"];
+						--p.count;
+						return p;
+					},
+					function(){
+						return {count:0,x:0,y:0,size:0,color:"",ccy:"",label:"",Main_ProductType:"", Level_Current:""};
+					});
+				
+										
+				
+				InstChart /* dc.pieChart('#quarter-chart', 'chartGroup') */
+				.width(180)
+				.height(180)
+				.radius(80)
+				.innerRadius(30)
+				.dimension(byInst1)
+				.group(instgroup);
+
+				
+
+
+
+				
+				CcyChart /* dc.rowChart('#day-of-week-chart', 'chartGroup') */
+				.width(180)
+				.height(180)
+				.margins({top: 20, left: 10, right: 10, bottom: 20})
+				.group(ccygroup)
+				.dimension(byCcy)
+				// Assign colors to each value in the x scale domain
+				.ordinalColors(['#3182bd', '#6baed6', '#9ecae1', '#c6dbef', '#dadaeb'])
+				.label(function (d) {
+					return d.key;
+				})
+				// Title sets the row text
+				.title(function (d) {
+					return d.key;
+				})
+				.elasticX(true)
+				.xAxis().ticks(4);
+
+					
+					
+				BubbleChart
+				.width(600)        
+				.height(550)        
+				.transitionDuration(1500)
+				.margins({top: 60, right: 50, bottom: 20, left: 20})
+				.dimension(temp)        
+				.group(groupByQuad)
+				// (_optional_) define color function or array for bubbles: [ColorBrewer](http://colorbrewer2.org/)
+				//.colors(colorbrewer.RdYlGn[9])
+				.colors(["#d62728","#2ca02c"])
+				//(optional) define color domain to match your data domain if you want to bind data or color
+				//.colorDomain([-500, 500])       
+				.colorAccessor(function (d) {return d.value.color;})        
+				.keyAccessor(function (p) {return p.value.x;})        
+				.valueAccessor(function (p) {return p.value.y;})                
+				.radiusValueAccessor(function (p) {return p.value.size;})		
+				.maxBubbleRelativeSize(1.2)
+				.x(d3.scale.linear().domain([-1.5, 1.5]))
+				.y(d3.scale.linear().domain([-1.5, 1.5]))
+				.r(d3.scale.linear().domain([0, 150]))                
+				.elasticY(true)
+				.elasticX(true)        
+				.yAxisPadding(0.2)
+				.xAxisPadding(0.2)        
+				.renderHorizontalGridLines(false)
+				.renderVerticalGridLines(false)		
+				.title(function (p) {return p.value.ccy;})
+				.renderTitle(true)
+				.xAxisLabel(' Corr_PC1')        
+				.yAxisLabel('Corr_PC2')
+				.label(function (p) {
+					return p.value.label;})
+				.renderLabel(true);
+				
+				
+				
+				
+				flyTable
+				.width(1200)
+				.height(600)
+				.dimension(temp)
+				.group(function(d){
+						return ""})
+				.size(20)
+				.columns([
+						function(d){ return d.Tenor;},
+						function(d){ return d.Level_Current;},
+						function(d){ return d["Level_Low(3m)"];},
+						function(d){ return d["Level_High(3m)"]},
+						function(d){ return d["Carry(3m)"];},
+						function(d){ return d["Roll(3m)"];},
+						function(d){ return d["Std"];},
+						function(d){ return d["Z"];},
+						function(d){ return d["(Carry+Roll)/Std"];},
+						function(d){ return d["Type_PC1"];},
+						function(d){ return d["Type_PC2"];},						
+						])
+				.sortBy(function(d){return d.Index})
+				
+				
+				
+				dc.renderAll('chartGroup');
+				
+				
+				
+			});
+			
+			
