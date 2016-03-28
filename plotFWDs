@@ -1,0 +1,114 @@
+				function plotfwds(ccy,tenor,placeholder)
+				{
+					var cf = crossfilter(fwddataset);
+					var curveCCy=cf.dimension(function(p) { return p.CCy; });	
+					curveCCy.filter(ccy);
+					var curveTenor=cf.dimension(function(p){return p.Tenor;});
+					curveTenor.filter(tenor);
+					var curveName=cf.dimension(function(p){return p[""];});
+					var store1=0, store2=0;
+					var dimcount = curveName.top(Infinity).length;				
+					curveName.bottom(Infinity).forEach(function(p,i) { 								
+									p.x = i;
+									p.level=p["89"];
+									p.slope =p["89"]-store1;
+									//p.convexity = (i==0) ? 0 : store2-p.slope;
+									store1=p["89"];
+									store2=p.slope;
+									//console.log("level=" + p.level + " slope=" + p.slope + " Convexity=" + p.convexity + " Tenor=" + p[""]);
+						})
+					curveName.bottom(Infinity)[0]["slope"]=curveName.bottom(Infinity)[1]["slope"];
+					
+					
+					curveName.top(Infinity).forEach(function(p,i) { 								
+									p.convexity = p.slope - store2;
+									store2= p.slope;
+									//console.log("level=" + p.level + " slope=" + p.slope + " Convexity=" + p.convexity + " Tenor=" + p[""]);
+						});
+					curveName.top(Infinity)[0]["convexity"]=curveName.top(Infinity)[1]["convexity"];	
+					curveName.bottom(Infinity).forEach(function(p,i) { 								
+									console.log("x=" + p.x + " level=" + p.level + " slope=" + p.slope + " Convexity=" + p.convexity + " Tenor=" + p[""] + "extra= " + p.keyCol);
+									});
+									
+				
+					var keydim = cf.dimension(function(p){return p.x;});				
+					var grp1 = keydim.group().reduce(
+					function(p,v){
+						p["slope"] = v.slope;
+						p["convexity"] = v.convexity;
+						p["level"] = v.level;
+						++p.count;
+						return p;
+					},
+					function(p,v){
+						p["slope"] = v.slope;
+						p["convexity"] = v.convexity;
+						p["level"] = v.level;
+						--p.count;
+						return p;
+					},
+					function(){
+						return {count:0,slope:0.0, convexity:0.0,level:0.0};
+					});
+					
+					console.log("Inside Forwards");
+					print_filter(grp1);
+
+					
+					
+					var compositeChart = dc.compositeChart("#" + placeholder, placeholder + "_group");
+
+					
+					compositeChart
+					.width(400)
+					.height(350)
+					.transitionDuration(1500)
+					//.margins({top: 60, right: 50, bottom: 20, left: 10})				
+					.x(d3.scale.linear().domain([0,10]))
+					.yAxisLabel("The Y Axis")
+					.legend(dc.legend().x(30).y(10).itemHeight(10).gap(5))
+					.renderHorizontalGridLines(true)
+					.xAxis(d3.svg.axis().orient('bottom'))
+					.useRightYAxis(true)
+					.rightY(d3.scale.linear().domain([0,300]))								
+					.compose([
+						dc.lineChart(compositeChart)
+							.dimension(keydim)
+							.group(grp1, "Slope Line")	
+							.keyAccessor(function (p) {return p.key;})        
+							.valueAccessor(function(p) { return p.value.slope; })
+							.x(d3.scale.linear().domain([0,10]))
+							.y(d3.scale.linear().domain([0,40]))						
+							.colors('red')
+							.renderDataPoints(true)
+							.clipPadding(10)						
+							.dashStyle([2,2]),
+						dc.lineChart(compositeChart)
+							.dimension(keydim)
+							.group(grp1, "Convexity Line")							
+							.keyAccessor(function (p) {return p.key;})        
+							.valueAccessor(function(p) { return p.value.convexity; })
+							.x(d3.scale.linear().domain([0,10]))
+							.y(d3.scale.linear().domain([-10,20]))												
+							.colors('blue')
+							.renderDataPoints(true)
+							.clipPadding(10)						
+							.dashStyle([5,5]),
+						dc.lineChart(compositeChart)
+							.dimension(keydim)
+							.group(grp1, "Level Line")							
+							.useRightYAxis(true)
+							.keyAccessor(function (p) {return p.key;})        
+							.valueAccessor(function(p) { return p.value.level; })
+							.x(d3.scale.linear().domain([0,10]))
+							.colors('green')
+							.renderDataPoints(true)						
+							.clipPadding(10)						
+							.dashStyle([10,10])
+						])
+					.brushOn(false)
+					
+					dc.renderAll(placeholder + "_group")
+				};
+				
+			};
