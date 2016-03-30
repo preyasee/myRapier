@@ -1,0 +1,48 @@
+I had the same question for y-axis, and here's one way to do it in the library itself:
+
+After the line  var _yElasticity = false; add:
+
+  var _yVisibility = true;
+After the declaration of _chart.elasticY = function (_) { ... } define a new function .showYAxis([boolean]) by adding:
+
+/**
+#### .showYAxis([boolean])
+Turn on/off y axis.
+**/
+_chart.showYAxis = function (_) {
+    if (!arguments.length) {
+        return _yVisibility;
+    }
+    _yVisibility = _;
+    return _chart;
+};
+Change the condition that determines when the y-axis is rendered from
+
+    if (_chart.elasticY() || render) {
+        _chart.renderYAxis(_chart.g());
+    }
+to
+
+        if ((_chart.elasticY() || render) && (_chart.showYAxis()) ) {
+            _chart.renderYAxis(_chart.g());
+        }
+Now you can remove the y-axis in your charts by simply adding .showYAxis(false).
+shareimprove this answer
+answered Apr 30 '15 at 17:27
+
+verse
+15418
+add a comment
+up vote
+2
+down vote
+Via CSS one can hide the axes and text.
+
+Remove row chart's x-axis
+Add the following to your CSS (replacing the #ID with yours):
+
+#your-row-chart svg g g.axis.x { display: none; }
+Remove bar chart's y-axis
+Add the following to your CSS (replacing the #ID with yours):
+
+#your-bar-chart svg g g.axis.y { display: none; }
